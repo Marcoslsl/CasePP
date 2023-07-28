@@ -43,7 +43,7 @@ class Pipeline:
         self.validate_input_data(data_bank)
         self.validate_input_data(data_transactions)
 
-        transactions = pd.read_csv(data_bank, sep=sep)
+        transactions = pd.read_csv(data_transactions, sep=sep)
         bank_dim = pd.read_csv(data_bank, sep=sep)
 
         return transactions.merge(bank_dim, on="bank_id", how="left")
@@ -103,7 +103,7 @@ class Pipeline:
             The path to save the dataframe.
         """
         if path is not None:
-            data.to_csv("RESULT.csv")
+            data.to_csv("RESULT.csv", index=False)
         return data
 
     def run_pipeline(
