@@ -1,5 +1,13 @@
 import pandas as pd
-from typing import List
+import logging
+from logging import FileHandler, StreamHandler, INFO
+
+
+logging.basicConfig(
+    level=INFO,
+    format="%(levelname)s:%(asctime)s:%(message)s",
+    handlers=[FileHandler("src/logs.log", "a"), StreamHandler()],
+)
 
 
 class Pipeline:
@@ -22,9 +30,13 @@ class Pipeline:
             if data.endswith(".csv"):
                 return True
             else:
-                raise ValueError("data must be a csv file.")
+                msg = "data must be a csv file."
+                logging.error(msg)
+                raise ValueError(msg)
         else:
-            raise ValueError("data must be a string")
+            msg = "data must be a string"
+            logging.error(msg)
+            raise ValueError(msg)
 
     def __read_data(
         self, data_bank: str, data_transactions: str, sep: str = ","
@@ -40,6 +52,7 @@ class Pipeline:
         sep: str, default = ","
             Delimiter to use.
         """
+        logging.info("Starting reading...")
         self.validate_input_data(data_bank)
         self.validate_input_data(data_transactions)
 
@@ -58,6 +71,7 @@ class Pipeline:
         transactions_bank: pd.Dataframe
             Merged dataframe between bank_dim and transactions.
         """
+        logging.info("Starting transformation...")
         transactions_bank["transaction_name_treated"] = transactions_bank[
             "transaction_name_treated"
         ].apply(lambda x: x.upper())
@@ -94,7 +108,7 @@ class Pipeline:
     def __load_data(
         self, data: pd.DataFrame, path: str = None
     ) -> pd.DataFrame:
-        """Load data.
+        """Load data in a csv file and return the same dataframe.
 
         Parameters
         ----------
@@ -102,6 +116,7 @@ class Pipeline:
         path: str, default = None
             The path to save the dataframe.
         """
+        logging.info("Starting loading...")
         if path is not None:
             data.to_csv("RESULT.csv", index=False)
         return data
@@ -128,4 +143,8 @@ class Pipeline:
         """
         transactions_bank = self.__read_data(data_bank, data_transactions, sep)
         transactions_bank = self.__transform_data(transactions_bank)
-        return self.__load_data(data=transactions_bank, path=path)
+        transactions_bank_final = self.__load_data(
+            data=transactions_bank, path=path
+        )
+        logging.info("Pipeline fineshed.")
+        return transactions_bank_final
