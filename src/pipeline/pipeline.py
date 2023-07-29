@@ -17,6 +17,9 @@ class Pipeline:
         """Constructor"""
         pass
 
+    def __repr__(self) -> str:
+        return "Pipeline()"
+
     @staticmethod
     def __validate_columns_read(
         bank_dim: pd.DataFrame, transactions: pd.DataFrame

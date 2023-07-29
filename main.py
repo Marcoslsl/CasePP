@@ -1,4 +1,4 @@
-from src.utils import Pipeline
+from src.pipeline import Pipeline
 
 bank_dim_path = "./src/dataset/bank_dim.csv"
 transactions_path = "./src/dataset/transactions.csv"
