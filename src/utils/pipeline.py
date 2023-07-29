@@ -18,7 +18,44 @@ class Pipeline:
         pass
 
     @staticmethod
-    def validate_input_data(data: str) -> bool:
+    def __validate_columns_read(
+        bank_dim: pd.DataFrame, transactions: pd.DataFrame
+    ) -> bool:
+        """Validate the received columns.
+
+        Parameters
+        ----------
+        bank_dim: pd.Dataframe
+        transactions: pd.DataFrame
+        """
+        bank_columns_list = ["bank_name", "bank_id"]
+        transactions_columns_list = [
+            "transaction_id",
+            "user_id",
+            "transaction_name_raw",
+            "transaction_name_treated",
+            "transaction_amount",
+            "year",
+            "month",
+            "day",
+            "bank_id",
+        ]
+        column_bank_val = all(
+            column in bank_dim.columns for column in bank_columns_list
+        )
+        column_transaction_val = all(
+            column in transactions.columns
+            for column in transactions_columns_list
+        )
+        if column_bank_val and column_transaction_val:
+            return True
+        else:
+            msg = "Columns validation error"
+            logging.error(msg)
+            raise ValueError(msg)
+
+    @staticmethod
+    def __validate_input_data(data: str) -> bool:
         """Validate the input data.
 
         Parameters
@@ -53,11 +90,12 @@ class Pipeline:
             Delimiter to use.
         """
         logging.info("Starting reading...")
-        self.validate_input_data(data_bank)
-        self.validate_input_data(data_transactions)
+        self.__validate_input_data(data_bank)
+        self.__validate_input_data(data_transactions)
 
         transactions = pd.read_csv(data_transactions, sep=sep)
         bank_dim = pd.read_csv(data_bank, sep=sep)
+        self.__validate_columns_read(bank_dim, transactions)
 
         return transactions.merge(bank_dim, on="bank_id", how="left")
 
