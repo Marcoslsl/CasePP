@@ -18,12 +18,13 @@ class Pipeline:
         pass
 
     def __repr__(self) -> str:
+        """Repr Method."""
         return "Pipeline()"
 
     @staticmethod
     def __validate_columns_read(
         bank_dim: pd.DataFrame, transactions: pd.DataFrame
-    ) -> bool:
+    ) -> None:
         """Validate the received columns.
 
         Parameters
@@ -51,7 +52,7 @@ class Pipeline:
             for column in transactions_columns_list
         )
         if column_bank_val and column_transaction_val:
-            return True
+            return None
         else:
             msg = "Columns validation error"
             logging.error(msg)
